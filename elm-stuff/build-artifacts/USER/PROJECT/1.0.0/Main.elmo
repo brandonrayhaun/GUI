@@ -1,0 +1,46 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $WebSocket = Elm.WebSocket.make(_elm);
+   var keys = $Signal.channel("0");
+   var symmetry = $Signal.subscribe(keys);
+   var buttons = A2($Graphics$Element.flow,
+   $Graphics$Element.down,
+   _L.fromArray([A2($Graphics$Input.button,
+                A2($Signal.send,keys,"0"),
+                "Send Hello")
+                ,A2($Graphics$Input.button,
+                A2($Signal.send,keys,"1"),
+                "Send Goodbye")]));
+   var main = A2($Signal.map2,
+   F2(function (s1,s2) {
+      return A2($Graphics$Element.flow,
+      $Graphics$Element.down,
+      _L.fromArray([$Text.plainText(s1)
+                   ,$Text.plainText(s2)
+                   ,buttons]));
+   }),
+   symmetry)(A2($WebSocket.connect,
+   "ws://localhost:8275/",
+   symmetry));
+   _elm.Main.values = {_op: _op
+                      ,keys: keys
+                      ,symmetry: symmetry
+                      ,buttons: buttons
+                      ,main: main};
+   return _elm.Main.values;
+};
